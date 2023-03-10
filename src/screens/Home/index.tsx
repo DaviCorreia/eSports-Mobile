@@ -1,6 +1,7 @@
-import { useEffect,useState} from 'react';
-import { Image,FlatList} from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import logoImg from '../../assets/logo-nlw-esports.png';
 import { Heading } from '../../components/Heading';
@@ -8,23 +9,33 @@ import { Heading } from '../../components/Heading';
 import { styles } from './styles';
 
 import { GameCard, GameCardProps } from '../../components/GameCard';
+import { Background } from '../../components/Background';
 
 export function Home() {
 
-  const [games,setGames] =useState<GameCardProps[]>([]);
+  const [games, setGames] = useState<GameCardProps[]>([]);
 
-  useEffect(()=>{
+  const navigation = useNavigation();
+
+  function handleOpenGame(){
+    navigation.navigate('game');
+  }
+
+  useEffect(() => {
     fetch('http://192.168.100.4:3333/games')
-    .then(response => response.json())
-    .then(data => setGames(data))
-  },[]);
+      .then(response => response.json())
+      .then(data => setGames(data))
+  }, []);
 
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image 
-        source={logoImg}
-        style={styles.logo}
+    <Background>
+
+
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={logoImg}
+          style={styles.logo}
         />
 
         <Heading
@@ -32,13 +43,14 @@ export function Home() {
           subtitle='Selecione o game que deseja jogar...'
         />
 
-        <FlatList 
+        <FlatList
           data={games}
-          keyExtractor={item=>item.id}
-          renderItem={({item})=>(
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
             <GameCard
               data={item}
-  
+              onPress={handleOpenGame}
+
             />
           )}
           showsHorizontalScrollIndicator={false}
@@ -46,6 +58,7 @@ export function Home() {
           contentContainerStyle={styles.contentList}
         />
 
-    </SafeAreaView>
+      </SafeAreaView>
+    </Background>
   );
 }
